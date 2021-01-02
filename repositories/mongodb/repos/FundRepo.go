@@ -2,7 +2,9 @@ package repos
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/hthl85/aws-vanguard-ca-etf-countries/consts"
@@ -108,6 +110,12 @@ func (repo *FundRepo) GetAllFundsOverview() ([]*models.FundOverviewModel, error)
 		return nil, err
 	}
 
+	var countryConsts []models.Country
+	if err := json.Unmarshal([]byte(consts.Countries), &countryConsts); err != nil {
+		fmt.Println("error unmarshal country consts")
+		return nil, err
+	}
+
 	var funds []*models.FundOverviewModel
 
 	// iterate over the cursor to decode document one at a time
@@ -120,7 +128,7 @@ func (repo *FundRepo) GetAllFundsOverview() ([]*models.FundOverviewModel, error)
 		}
 
 		for _, v := range fundOverviewModel.CountryExposure {
-			v.CountryCode = getCountryCode(v.CountryName)
+			v.CountryCode = getCountryCode(v.CountryName, countryConsts)
 		}
 
 		funds = append(funds, &fundOverviewModel)
@@ -181,6 +189,11 @@ func createContext() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), timeout*time.Millisecond)
 }
 
-func getCountryCode(string) string {
+func getCountryCode(name string, countryConsts []models.Country) string {
+	for _, v := range countryConsts {
+		if strings.ToUpper(v.Name) == strings.ToUpper(name) {
+			return v.Code
+		}
+	}
 	return ""
 }
