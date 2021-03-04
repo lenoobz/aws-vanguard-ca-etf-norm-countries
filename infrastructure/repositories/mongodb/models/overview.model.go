@@ -4,42 +4,41 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// OverviewModel represents Vanguard's fund overview details model
-type OverviewModel struct {
-	ID               *primitive.ObjectID     `json:"id,omitempty" bson:"_id,omitempty"`
-	IsActive         bool                    `json:"isActive,omitempty" bson:"isActive,omitempty"`
-	CreatedAt        int64                   `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
-	ModifiedAt       int64                   `json:"modifiedAt,omitempty" bson:"modifiedAt,omitempty"`
-	Schema           string                  `json:"schema,omitempty" bson:"schema,omitempty"`
-	PortID           string                  `json:"portId,omitempty" bson:"portId,omitempty"`
-	AssetClass       string                  `json:"assetClass,omitempty" bson:"assetClass,omitempty"`
-	Strategy         string                  `json:"strategy,omitempty" bson:"strategy,omitempty"`
-	DividendSchedule string                  `json:"dividendSchedule,omitempty" bson:"dividendSchedule,omitempty"`
-	ShortName        string                  `json:"shortName,omitempty" bson:"shortName,omitempty"`
-	Currency         string                  `json:"baseCurrency,omitempty" bson:"baseCurrency,omitempty"`
-	Isin             string                  `json:"isin,omitempty" bson:"isin,omitempty"`
-	Sedol            string                  `json:"sedol,omitempty" bson:"sedol,omitempty"`
-	Ticker           string                  `json:"ticker,omitempty" bson:"ticker,omitempty"`
-	TotalAssets      float64                 `json:"totalAssets,omitempty" bson:"totalAssets,omitempty"`
-	Yield12Month     float64                 `json:"yield12Month,omitempty" bson:"yield12Month,omitempty"`
-	Price            float64                 `json:"price,omitempty" bson:"price,omitempty"`
-	ManagementFee    float64                 `json:"managementFee,omitempty" bson:"managementFee,omitempty"`
-	MerValue         float64                 `json:"merValue,omitempty" bson:"merValue,omitempty"`
-	SectorWeighting  []*SectorWeightingModel `json:"sectorWeighting,omitempty" bson:"sectorWeighting,omitempty"`
-	CountryExposure  []*ExposureModel        `json:"countryExposure,omitempty" bson:"countryExposure,omitempty"`
+// VanguardOverviewModel represents Vanguard fund overview model
+type VanguardOverviewModel struct {
+	ID               *primitive.ObjectID      `bson:"_id,omitempty"`
+	IsActive         bool                     `bson:"isActive,omitempty"`
+	CreatedAt        int64                    `bson:"createdAt,omitempty"`
+	ModifiedAt       int64                    `bson:"modifiedAt,omitempty"`
+	Schema           string                   `bson:"schema,omitempty"`
+	PortID           string                   `bson:"portId,omitempty"`
+	AssetClass       string                   `bson:"assetClass,omitempty"`
+	Strategy         string                   `bson:"strategy,omitempty"`
+	DividendSchedule string                   `bson:"dividendSchedule,omitempty"`
+	Name             string                   `bson:"name,omitempty"`
+	Currency         string                   `bson:"currency,omitempty"`
+	Isin             string                   `bson:"isin,omitempty"`
+	Sedol            string                   `bson:"sedol,omitempty"`
+	Ticker           string                   `bson:"ticker,omitempty"`
+	TotalAssets      float64                  `bson:"totalAssets,omitempty"`
+	Yield12Month     float64                  `bson:"yield12Month,omitempty"`
+	Price            float64                  `bson:"price,omitempty"`
+	ManagementFee    float64                  `bson:"managementFee,omitempty"`
+	MerFee           float64                  `bson:"merFee,omitempty"`
+	Sectors          []*SectorBreakdownModel  `bson:"sectors,omitempty"`
+	Countries        []*CountryBreakdownModel `bson:"countries,omitempty"`
 }
 
-// SectorWeightingModel is the representation of sector the fund invested
-type SectorWeightingModel struct {
-	FundPercent float64 `json:"fundPercent,omitempty" bson:"fundPercent,omitempty"`
-	LongName    string  `json:"longName,omitempty" bson:"longName,omitempty"`
-	SectorType  string  `json:"sectorType,omitempty" bson:"sectorType,omitempty"`
+// SectorBreakdownModel is the representation of sector the fund invested
+type SectorBreakdownModel struct {
+	FundPercent float64 `bson:"fundPercent,omitempty"`
+	SectorName  string  `bson:"sectorName,omitempty"`
 }
 
-// CountryExposureModel is the representation of country the fund exposed
-type CountryExposureModel struct {
-	CountryName     string  `json:"countryName,omitempty" bson:"countryName,omitempty"`
-	HoldingStatCode string  `json:"holdingStatCode,omitempty" bson:"holdingStatCode,omitempty"`
-	FundMktPercent  float64 `json:"fundMktPercent,omitempty" bson:"fundMktPercent,omitempty"`
-	FundTnaPercent  float64 `json:"fundTnaPercent,omitempty" bson:"fundTnaPercent,omitempty"`
+// CountryBreakdownModel is the representation of country the fund exposed
+type CountryBreakdownModel struct {
+	CountryName     string  `bson:"countryName,omitempty"`
+	FundTnaPercent  float64 `bson:"fundTnaPercent,omitempty"`
+	FundMktPercent  float64 `bson:"fundMktPercent,omitempty"`
+	HoldingStatCode string  `bson:"holdingStatCode,omitempty"`
 }

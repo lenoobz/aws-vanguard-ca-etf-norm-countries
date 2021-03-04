@@ -7,28 +7,28 @@ import (
 	"strings"
 	"time"
 
+	logger "github.com/hthl85/aws-lambda-logger"
 	"github.com/hthl85/aws-vanguard-ca-etf-norm-countries/config"
 	"github.com/hthl85/aws-vanguard-ca-etf-norm-countries/consts"
 	"github.com/hthl85/aws-vanguard-ca-etf-norm-countries/entities"
 	"github.com/hthl85/aws-vanguard-ca-etf-norm-countries/infrastructure/repositories/mongodb/models"
-	"github.com/hthl85/aws-vanguard-ca-etf-norm-countries/usecase/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// ExposureMongo struct
-type ExposureMongo struct {
+// BreakdownMongo struct
+type BreakdownMongo struct {
 	db     *mongo.Database
 	client *mongo.Client
-	log    logger.IAppLogger
 	conf   *config.MongoConfig
+	log    logger.ContextLog
 }
 
-// NewExposureMongo create new repository
-func NewExposureMongo(db *mongo.Database, l logger.IAppLogger, conf *config.MongoConfig) (*ExposureMongo, error) {
+// NewBreakdownMongo create new repository
+func NewBreakdownMongo(db *mongo.Database, l logger.ContextLog, conf *config.MongoConfig) (*BreakdownMongo, error) {
 	if db != nil {
-		return &ExposureMongo{
+		return &BreakdownMongo{
 			db:   db,
 			log:  l,
 			conf: conf,
@@ -67,7 +67,7 @@ func NewExposureMongo(db *mongo.Database, l logger.IAppLogger, conf *config.Mong
 		return nil, err
 	}
 
-	return &ExposureMongo{
+	return &BreakdownMongo{
 		db:     client.Database(conf.Dbname),
 		client: client,
 		log:    l,
@@ -80,7 +80,7 @@ func NewExposureMongo(db *mongo.Database, l logger.IAppLogger, conf *config.Mong
 ///////////////////////////////////////////////////////////
 
 // Close disconnect from database
-func (r *ExposureMongo) Close() {
+func (r *BreakdownMongo) Close() {
 	ctx := context.Background()
 	r.log.Info(ctx, "close sector mongo client")
 
@@ -99,7 +99,7 @@ func createContext(ctx context.Context, t uint64) (context.Context, context.Canc
 	return context.WithTimeout(ctx, timeout*time.Millisecond)
 }
 
-func getCountryCode(name string, countryConsts []entities.Country) string {
+func getCountryCode(name string, countryConsts []entities.CountryCode) string {
 	for _, v := range countryConsts {
 		if strings.ToUpper(v.Name) == strings.ToUpper(name) {
 			return v.Code
@@ -112,8 +112,8 @@ func getCountryCode(name string, countryConsts []entities.Country) string {
 // Implement exposure repo interface
 ///////////////////////////////////////////////////////////
 
-// FindAllExposure finds all fund country exposure
-func (r *ExposureMongo) FindAllExposure(ctx context.Context) ([]*entities.Exposure, error) {
+// FindCountriesBreakdown finds all fund country exposure
+func (r *BreakdownMongo) FindCountriesBreakdown(ctx context.Context) ([]*entities.FundBreakdown, error) {
 	// create new context for the query
 	ctx, cancel := createContext(ctx, r.conf.TimeoutMS)
 	defer cancel()
@@ -148,28 +148,28 @@ func (r *ExposureMongo) FindAllExposure(ctx context.Context) ([]*entities.Exposu
 		return nil, err
 	}
 
-	var countryConsts []entities.Country
+	var countryConsts []entities.CountryCode
 	if err := json.Unmarshal([]byte(consts.Countries), &countryConsts); err != nil {
 		r.log.Error(ctx, "unmarshal countries failed", err)
 		return nil, err
 	}
 
-	var funds []*entities.Exposure
+	var funds []*entities.FundBreakdown
 
 	// iterate over the cursor to decode document one at a time
 	for cur.Next(ctx) {
 		// decode cursor to activity model
-		var fundOverviewModel entities.Exposure
-		if err = cur.Decode(&fundOverviewModel); err != nil {
+		var fund entities.FundBreakdown
+		if err = cur.Decode(&fund); err != nil {
 			r.log.Error(ctx, "decode fund overview failed")
 			return nil, err
 		}
 
-		for _, v := range fundOverviewModel.CountryExposure {
+		for _, v := range fund.Countries {
 			v.CountryCode = getCountryCode(v.CountryName, countryConsts)
 		}
 
-		funds = append(funds, &fundOverviewModel)
+		funds = append(funds, &fund)
 	}
 
 	if err := cur.Err(); err != nil {
@@ -180,8 +180,8 @@ func (r *ExposureMongo) FindAllExposure(ctx context.Context) ([]*entities.Exposu
 	return funds, nil
 }
 
-// UpdateAllExposure updates all fund country exposure
-func (r *ExposureMongo) UpdateAllExposure(ctx context.Context, funds []*entities.Exposure) error {
+// UpdateCountriesBreakdown updates all fund country exposure
+func (r *BreakdownMongo) UpdateCountriesBreakdown(ctx context.Context, funds []*entities.FundBreakdown) error {
 	// create new context for the query
 	ctx, cancel := createContext(ctx, r.conf.TimeoutMS)
 	defer cancel()
@@ -193,21 +193,21 @@ func (r *ExposureMongo) UpdateAllExposure(ctx context.Context, funds []*entities
 	}
 	col := r.db.Collection(colname)
 
-	for _, fund := range funds {
-		fundModel := models.NewFundExposureModel(fund)
+	for _, v := range funds {
+		m := models.NewFundBreakdownModel(v)
 
-		fundModel.IsActive = true
-		fundModel.Schema = r.conf.SchemaVersion
-		fundModel.ModifiedAt = time.Now().UTC().Unix()
+		m.IsActive = true
+		m.Schema = r.conf.SchemaVersion
+		m.ModifiedAt = time.Now().UTC().Unix()
 
 		filter := bson.D{{
 			Key:   "ticker",
-			Value: fund.Ticker,
+			Value: v.Ticker,
 		}}
 
 		update := bson.D{{
 			Key:   "$set",
-			Value: fundModel,
+			Value: m,
 		}, {
 			Key: "$setOnInsert",
 			Value: bson.D{{
@@ -219,7 +219,7 @@ func (r *ExposureMongo) UpdateAllExposure(ctx context.Context, funds []*entities
 		opts := options.Update().SetUpsert(true)
 
 		if _, err := col.UpdateOne(ctx, filter, update, opts); err != nil {
-			r.log.Error(ctx, "update exposure failed", "ticker", fund.Ticker)
+			r.log.Error(ctx, "update exposure failed", "ticker", v.Ticker)
 			return err
 		}
 	}
