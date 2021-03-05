@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Normalize Vanguard Country Exposure in Dev
+name: Normalize Vanguard Country Breakdown in Dev
 
 # Controls when the action will run.
 on:

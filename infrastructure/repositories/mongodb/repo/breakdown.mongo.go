@@ -99,8 +99,8 @@ func createContext(ctx context.Context, t uint64) (context.Context, context.Canc
 	return context.WithTimeout(ctx, timeout*time.Millisecond)
 }
 
-func getCountryCode(name string, countryConsts []entities.CountryCode) string {
-	for _, v := range countryConsts {
+func getCountryCode(name string, codes []entities.CountryCode) string {
+	for _, v := range codes {
 		if strings.ToUpper(v.Name) == strings.ToUpper(name) {
 			return v.Code
 		}
@@ -148,8 +148,8 @@ func (r *BreakdownMongo) FindCountriesBreakdown(ctx context.Context) ([]*entitie
 		return nil, err
 	}
 
-	var countryConsts []entities.CountryCode
-	if err := json.Unmarshal([]byte(consts.Countries), &countryConsts); err != nil {
+	var codes []entities.CountryCode
+	if err := json.Unmarshal([]byte(consts.Countries), &codes); err != nil {
 		r.log.Error(ctx, "unmarshal countries failed", err)
 		return nil, err
 	}
@@ -166,7 +166,7 @@ func (r *BreakdownMongo) FindCountriesBreakdown(ctx context.Context) ([]*entitie
 		}
 
 		for _, v := range fund.Countries {
-			v.CountryCode = getCountryCode(v.CountryName, countryConsts)
+			v.CountryCode = getCountryCode(v.CountryName, codes)
 		}
 
 		funds = append(funds, &fund)
