@@ -1,17 +1,17 @@
-# Normalize Vanguard Country Exposure Data
+# Normalize Vanguard Country Breakdown Data
 
-The lambda function to normalize `Vanguard Canada ETF` overview raw data and extract country exposure
+The lambda function to normalize `Vanguard Canada ETF` overview raw data and extract country breakdown
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Overview](#overview)
-    - [Technical Summary](#technical-summary)
+  - [Technical Summary](#technical-summary)
 - [Project Structure](#project-structure)
 - [Usage](#usage)
-    - [Build lambda function](#build-lambda-function)
-    - [Build cmd](#build-cmd)
-    - [Clean up](#clean-up)
+  - [Build lambda function](#build-lambda-function)
+  - [Build cmd](#build-cmd)
+  - [Clean up](#clean-up)
 - [How To](#how-to)
   - [Add new build environment](#add-new-build-environment)
 - [Contributing](#contributing)
@@ -35,22 +35,19 @@ This project follows the clean architecture with minor variation
 ├── api
 │   └── lambda
 ├── bin
-│   └── cmd
+│   ├── cmd
+│   └── lambda
 ├── cmd
 ├── config
 ├── consts
 ├── entities
 ├── infrastructure
-│   ├── logger
 │   └── repositories
 │       └── mongodb
 │           ├── models
 │           └── repo
-├── usecase
-│   ├── exposure
-│   └── logger
-└── utils
-    └── corid
+└── usecase
+    └── breakdown
 ```
 
 ## Usage
