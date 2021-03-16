@@ -99,13 +99,13 @@ func createContext(ctx context.Context, t uint64) (context.Context, context.Canc
 	return context.WithTimeout(ctx, timeout*time.Millisecond)
 }
 
-func getCountryCode(name string, codes []entities.CountryCode) string {
+func getCountryCode(name string, codes []entities.CountryCode) (string, error) {
 	for _, v := range codes {
-		if strings.ToUpper(v.Name) == strings.ToUpper(name) {
-			return v.Code
+		if strings.EqualFold(strings.ToUpper(v.Name), strings.ToUpper(name)) {
+			return v.Code, nil
 		}
 	}
-	return ""
+	return "", fmt.Errorf("cannot find country code for country %s", name)
 }
 
 ///////////////////////////////////////////////////////////
@@ -166,7 +166,12 @@ func (r *BreakdownMongo) FindCountriesBreakdown(ctx context.Context) ([]*entitie
 		}
 
 		for _, v := range fund.Countries {
-			v.CountryCode = getCountryCode(v.CountryName, codes)
+			code, err := getCountryCode(v.CountryName, codes)
+			if err != nil {
+				r.log.Error(ctx, "get country code failed", "error", err)
+			}
+
+			v.CountryCode = code
 		}
 
 		funds = append(funds, &fund)

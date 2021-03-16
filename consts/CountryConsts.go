@@ -964,6 +964,14 @@ const Countries = `
     "longitude": 127.5
   },
   {
+    "name": "Korea",
+    "alpha2Code": "KR",
+    "alpha3Code": "KOR",
+    "numberCode": 410,
+    "latitude": 37,
+    "longitude": 127.5
+  },
+  {
     "name": "Kuwait",
     "alpha2Code": "KW",
     "alpha3Code": "KWT",
@@ -1997,6 +2005,14 @@ const Countries = `
   },
   {
     "name": "Virgin Islands, British",
+    "alpha2Code": "VG",
+    "alpha3Code": "VGB",
+    "numberCode": 92,
+    "latitude": 18.5,
+    "longitude": -64.5
+  },
+  {
+    "name": "Virgin Islands British",
     "alpha2Code": "VG",
     "alpha3Code": "VGB",
     "numberCode": 92,
