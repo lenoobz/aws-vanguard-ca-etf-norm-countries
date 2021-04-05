@@ -26,12 +26,12 @@ func (s *Service) PopulateFundBreakdown(ctx context.Context) error {
 
 	exposures, err := s.repo.FindCountriesBreakdown(ctx)
 	if err != nil {
-		s.log.Error(ctx, "find all exposures failed")
+		s.log.Error(ctx, "find all exposures failed", "error", err)
 		return err
 	}
 
 	if err := s.repo.UpdateCountriesBreakdown(ctx, exposures); err != nil {
-		s.log.Error(ctx, "update all exposures failed")
+		s.log.Error(ctx, "update all exposures failed", "error", err)
 		return err
 	}
 
