@@ -212,16 +212,19 @@ func (r *BreakdownMongo) UpdateCountriesBreakdown(ctx context.Context, funds []*
 			Value: v.Ticker,
 		}}
 
-		update := bson.D{{
-			Key:   "$set",
-			Value: m,
-		}, {
-			Key: "$setOnInsert",
-			Value: bson.D{{
-				Key:   "createdAt",
-				Value: time.Now().UTC().Unix(),
-			}},
-		}}
+		update := bson.D{
+			{
+				Key:   "$set",
+				Value: m,
+			},
+			{
+				Key: "$setOnInsert",
+				Value: bson.D{{
+					Key:   "createdAt",
+					Value: time.Now().UTC().Unix(),
+				}},
+			},
+		}
 
 		opts := options.Update().SetUpsert(true)
 
