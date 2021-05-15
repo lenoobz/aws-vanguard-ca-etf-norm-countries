@@ -3,7 +3,6 @@ package repos
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	logger "github.com/hthl85/aws-lambda-logger"
@@ -98,15 +97,6 @@ func createContext(ctx context.Context, t uint64) (context.Context, context.Canc
 	return context.WithTimeout(ctx, timeout*time.Millisecond)
 }
 
-func getCountryCode(name string, codes []entities.CountryCode) (string, error) {
-	for _, v := range codes {
-		if strings.EqualFold(strings.ToUpper(v.Name), strings.ToUpper(name)) {
-			return v.Code, nil
-		}
-	}
-	return "", fmt.Errorf("cannot find country code for country %s", name)
-}
-
 ///////////////////////////////////////////////////////////
 // Implement exposure repo interface
 ///////////////////////////////////////////////////////////
@@ -148,12 +138,6 @@ func (r *BreakdownMongo) FindCountriesBreakdown(ctx context.Context) ([]*entitie
 		return nil, err
 	}
 
-	// var codes []entities.CountryCode
-	// if err := json.Unmarshal([]byte(consts.Countries), &codes); err != nil {
-	// 	r.log.Error(ctx, "unmarshal failed", "error", err)
-	// 	return nil, err
-	// }
-
 	var funds []*entities.FundBreakdown
 
 	// iterate over the cursor to decode document one at a time
@@ -164,15 +148,6 @@ func (r *BreakdownMongo) FindCountriesBreakdown(ctx context.Context) ([]*entitie
 			r.log.Error(ctx, "decode failed", "error", err)
 			return nil, err
 		}
-
-		// for _, v := range fund.Countries {
-		// 	code, err := getCountryCode(v.CountryName, codes)
-		// 	if err != nil {
-		// 		r.log.Error(ctx, "get country code failed", "error", err)
-		// 	}
-
-		// 	v.CountryCode = code
-		// }
 
 		funds = append(funds, &fund)
 	}
