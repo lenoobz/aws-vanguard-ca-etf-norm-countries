@@ -15,14 +15,8 @@ var AppConf = AppConfig{
 		Dbname:        "etf_funds_local",
 		SchemaVersion: "1",
 		Colnames: map[string]string{
-			"overview": "vanguard_fund_overview",
-			"exposure": "fund_countries",
+			"overview":  "vanguard_fund_overview",
+			"countries": "asset_countries",
 		},
 	},
 }
-
-// Collection names
-const (
-	FUND_EXPOSURE_COL     = "exposure"
-	VANGUARD_OVERVIEW_COL = "overview"
-)

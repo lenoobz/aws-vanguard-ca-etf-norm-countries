@@ -2,7 +2,6 @@ package repos
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -119,7 +118,7 @@ func (r *BreakdownMongo) FindCountriesBreakdown(ctx context.Context) ([]*entitie
 	defer cancel()
 
 	// what collection we are going to use
-	colname, ok := r.conf.Colnames[config.VANGUARD_OVERVIEW_COL]
+	colname, ok := r.conf.Colnames[consts.VANGUARD_OVERVIEW_COL]
 	if !ok {
 		r.log.Error(ctx, "cannot find collection name")
 		return nil, fmt.Errorf("cannot find collection name")
@@ -149,11 +148,11 @@ func (r *BreakdownMongo) FindCountriesBreakdown(ctx context.Context) ([]*entitie
 		return nil, err
 	}
 
-	var codes []entities.CountryCode
-	if err := json.Unmarshal([]byte(consts.Countries), &codes); err != nil {
-		r.log.Error(ctx, "unmarshal failed", "error", err)
-		return nil, err
-	}
+	// var codes []entities.CountryCode
+	// if err := json.Unmarshal([]byte(consts.Countries), &codes); err != nil {
+	// 	r.log.Error(ctx, "unmarshal failed", "error", err)
+	// 	return nil, err
+	// }
 
 	var funds []*entities.FundBreakdown
 
@@ -166,14 +165,14 @@ func (r *BreakdownMongo) FindCountriesBreakdown(ctx context.Context) ([]*entitie
 			return nil, err
 		}
 
-		for _, v := range fund.Countries {
-			code, err := getCountryCode(v.CountryName, codes)
-			if err != nil {
-				r.log.Error(ctx, "get country code failed", "error", err)
-			}
+		// for _, v := range fund.Countries {
+		// 	code, err := getCountryCode(v.CountryName, codes)
+		// 	if err != nil {
+		// 		r.log.Error(ctx, "get country code failed", "error", err)
+		// 	}
 
-			v.CountryCode = code
-		}
+		// 	v.CountryCode = code
+		// }
 
 		funds = append(funds, &fund)
 	}
@@ -193,7 +192,7 @@ func (r *BreakdownMongo) UpdateCountriesBreakdown(ctx context.Context, funds []*
 	defer cancel()
 
 	// what collection we are going to use
-	colname, ok := r.conf.Colnames[config.FUND_EXPOSURE_COL]
+	colname, ok := r.conf.Colnames[consts.ASSET_COUNTRY_COL]
 	if !ok {
 		r.log.Error(ctx, "cannot find collection name")
 		return fmt.Errorf("cannot find collection name")
