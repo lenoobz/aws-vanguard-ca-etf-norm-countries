@@ -15,9 +15,3 @@ type CountryBreakdown struct {
 	FundMktPercent  float64 `json:"fundMktPercent,omitempty"`
 	FundTnaPercent  float64 `json:"fundTnaPercent,omitempty"`
 }
-
-// CountryCode represents country info
-type CountryCode struct {
-	Name string `json:"name"`
-	Code string `json:"alpha3Code"`
-}

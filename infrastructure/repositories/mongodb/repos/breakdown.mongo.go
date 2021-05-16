@@ -108,7 +108,7 @@ func (r *BreakdownMongo) FindCountriesBreakdown(ctx context.Context) ([]*entitie
 	defer cancel()
 
 	// what collection we are going to use
-	colname, ok := r.conf.Colnames[consts.VANGUARD_OVERVIEW_COL]
+	colname, ok := r.conf.Colnames[consts.VANGUARD_FUND_OVERVIEW_COLLECTION]
 	if !ok {
 		r.log.Error(ctx, "cannot find collection name")
 		return nil, fmt.Errorf("cannot find collection name")
@@ -167,7 +167,7 @@ func (r *BreakdownMongo) UpdateCountriesBreakdown(ctx context.Context, funds []*
 	defer cancel()
 
 	// what collection we are going to use
-	colname, ok := r.conf.Colnames[consts.ASSET_COUNTRY_COL]
+	colname, ok := r.conf.Colnames[consts.ASSET_COUNTRIES_COLLECTION]
 	if !ok {
 		r.log.Error(ctx, "cannot find collection name")
 		return fmt.Errorf("cannot find collection name")
