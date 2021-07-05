@@ -1,6 +1,10 @@
 package models
 
 import (
+	"context"
+	"time"
+
+	logger "github.com/hthl85/aws-lambda-logger"
 	"github.com/hthl85/aws-vanguard-ca-etf-norm-countries/consts"
 	"github.com/hthl85/aws-vanguard-ca-etf-norm-countries/entities"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -9,9 +13,10 @@ import (
 // FundBreakdownModel is the representation of individual Vanguard fund overview model
 type FundBreakdownModel struct {
 	ID         *primitive.ObjectID `bson:"_id,omitempty"`
-	IsActive   bool                `bson:"isActive,omitempty"`
 	CreatedAt  int64               `bson:"createdAt,omitempty"`
 	ModifiedAt int64               `bson:"modifiedAt,omitempty"`
+	Enabled    bool                `bson:"enabled"`
+	Deleted    bool                `bson:"deleted"`
 	Schema     string              `bson:"schema,omitempty"`
 	Source     string              `bson:"source,omitempty"`
 	Ticker     string              `bson:"ticker,omitempty"`
@@ -29,23 +34,27 @@ type BreakdownModel struct {
 }
 
 // NewFundBreakdownModel create new fund exposure model
-func NewFundBreakdownModel(e *entities.FundBreakdown) *FundBreakdownModel {
-	var m []*BreakdownModel
+func NewFundBreakdownModel(ctx context.Context, log logger.ContextLog, e *entities.FundBreakdown, schemaVersion string) *FundBreakdownModel {
+	var breakdownModel []*BreakdownModel
 
-	for _, v := range e.Countries {
-		m = append(m, &BreakdownModel{
-			CountryCode:     v.CountryCode,
-			CountryName:     v.CountryName,
-			HoldingStatCode: v.HoldingStatCode,
-			FundMktPercent:  v.FundMktPercent,
-			FundTnaPercent:  v.FundTnaPercent,
+	for _, country := range e.Countries {
+		breakdownModel = append(breakdownModel, &BreakdownModel{
+			CountryCode:     country.CountryCode,
+			CountryName:     country.CountryName,
+			HoldingStatCode: country.HoldingStatCode,
+			FundMktPercent:  country.FundMktPercent,
+			FundTnaPercent:  country.FundTnaPercent,
 		})
 	}
 
 	return &FundBreakdownModel{
+		ModifiedAt: time.Now().UTC().Unix(),
+		Enabled:    true,
+		Deleted:    false,
+		Schema:     schemaVersion,
 		Source:     consts.DATA_SOURCE,
 		Ticker:     e.Ticker,
 		AssetClass: e.AssetClass,
-		Countries:  m,
+		Countries:  breakdownModel,
 	}
 }

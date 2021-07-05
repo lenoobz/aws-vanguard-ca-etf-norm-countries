@@ -1,13 +1,13 @@
 package entities
 
-// FundBreakdown represents Vanguard's fund FundBreakdown
+// FundBreakdown struct
 type FundBreakdown struct {
 	Ticker     string              `json:"ticker,omitempty"`
 	AssetClass string              `json:"assetClass,omitempty"`
 	Countries  []*CountryBreakdown `json:"countries,omitempty"`
 }
 
-// CountryBreakdown represents fund country exposure info
+// CountryBreakdown struct
 type CountryBreakdown struct {
 	CountryCode     string  `json:"countryCode,omitempty"`
 	CountryName     string  `json:"countryName,omitempty"`

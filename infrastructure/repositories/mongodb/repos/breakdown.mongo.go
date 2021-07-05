@@ -175,11 +175,7 @@ func (r *BreakdownMongo) UpdateCountriesBreakdown(ctx context.Context, funds []*
 	col := r.db.Collection(colname)
 
 	for _, v := range funds {
-		m := models.NewFundBreakdownModel(v)
-
-		m.IsActive = true
-		m.Schema = r.conf.SchemaVersion
-		m.ModifiedAt = time.Now().UTC().Unix()
+		m := models.NewFundBreakdownModel(ctx, r.log, v, r.conf.SchemaVersion)
 
 		filter := bson.D{{
 			Key:   "ticker",
