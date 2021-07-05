@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// FundBreakdownModel is the representation of individual Vanguard fund overview model
+// FundBreakdownModel struct
 type FundBreakdownModel struct {
 	ID         *primitive.ObjectID `bson:"_id,omitempty"`
 	CreatedAt  int64               `bson:"createdAt,omitempty"`
@@ -24,7 +24,7 @@ type FundBreakdownModel struct {
 	Countries  []*BreakdownModel   `bson:"countries,omitempty"`
 }
 
-// BreakdownModel is the representation of country the fund exposed
+// BreakdownModel struct
 type BreakdownModel struct {
 	CountryCode     string  `bson:"countryCode,omitempty"`
 	CountryName     string  `bson:"countryName,omitempty"`
