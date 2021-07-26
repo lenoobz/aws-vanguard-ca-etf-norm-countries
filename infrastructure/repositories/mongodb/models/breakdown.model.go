@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	logger "github.com/hthl85/aws-lambda-logger"
-	"github.com/hthl85/aws-vanguard-ca-etf-norm-countries/consts"
-	"github.com/hthl85/aws-vanguard-ca-etf-norm-countries/entities"
+	logger "github.com/lenoobz/aws-lambda-logger"
+	"github.com/lenoobz/aws-vanguard-ca-etf-norm-countries/consts"
+	"github.com/lenoobz/aws-vanguard-ca-etf-norm-countries/entities"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
